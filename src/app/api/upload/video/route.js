@@ -28,7 +28,7 @@ export async function POST(req){
            })
 
            if(duplicate.length > 0){
-            return NextResponse.json({ message: 'Duplicate video message' }, { status: 400 });
+            return NextResponse.json({ message: 'Oops! You have already uploaded a video message.' }, { status: 400 });
            }
       
           if (!file || !filePath) {

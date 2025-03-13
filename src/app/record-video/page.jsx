@@ -1,10 +1,12 @@
 "use client";
-import React, { useState, useRef,useEffect } from "react";
+import React, { useState, useRef,useEffect, useLayoutEffect } from "react";
 import "./recordVideoStyles.css";
+import LinkUsedMessage from "@/components/LinkUsedMessage";
 import {Suspense} from "react";
 import { useSearchParams } from 'next/navigation';
 import { nanoid } from "nanoid";
 import Webcam from "react-webcam";
+import SuccessModal from "@/components/SuccessModal";
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -26,8 +28,10 @@ const RecordVideoPage = () => {
     const webcamRef = useRef(null);
     const searchParams = useSearchParams();
     const orderId = searchParams.get("order_id");
+    const [showModal, setShowModal] = useState(false);
 
-    const {isUploadingVideo, uploadVideoToFirebaseAPI} = useStore();
+    const {isUploadingVideo, uploadVideoToFirebaseAPI,videoUploadingErrorMessage,
+       videoUploadStatus, alreadyUsed, checkOrderIdExistAPI} = useStore();
     const [maximumVideoLength, setMaximumVideoLength] = useState(30);
     const [videoFile, setVideoFile] = useState(null); 
     const mediaRecorderRef = useRef(null);
@@ -38,7 +42,17 @@ const RecordVideoPage = () => {
     const [videoPreview, setVideoPreview] = useState(null);
     const intervalRef = useRef(null);
 
-    
+    const handleCloseSuccessModal=()=>{
+      setShowModal(false);
+    }
+
+    const handleOpenSuccessModal=()=>{
+      setShowModal(true);
+    }
+
+    useLayoutEffect(()=>{
+      checkOrderIdExistAPI(orderId);
+    },[orderId]);
 
     const handleClickOpen = () => {
       setOpen(true);
@@ -133,6 +147,7 @@ const handleFileUploadToFirebase = async(file) => {
       if(uploadResponse.status === 200){
             console.log("Video uploaded successfully");
             handleClose();
+            setShowModal(true);
       }else{
         console.log("Video upload failed");
       }
@@ -140,10 +155,12 @@ const handleFileUploadToFirebase = async(file) => {
   
  
 };
-  
 
+if(!alreadyUsed ){
   return (
     <>
+
+
    
      <div className="w-full flex flex-col gap-1 min-h-screen p-2 bg-[#030325]">
 
@@ -235,9 +252,6 @@ const handleFileUploadToFirebase = async(file) => {
    )}
 
 
-
-
-
               {recording && !videoPreview && <section onClick={stopRecording} className="flex items-center active:scale-90 transition-all duration-100
               justify-center p-2 border-2  border-white bg-[#ff030f] rounded-full cursor-pointer">
                    <span className="w-4 h-4 bg-white rounded-sm">
@@ -297,13 +311,64 @@ const handleFileUploadToFirebase = async(file) => {
             ⏳ Wait
           </button>
         </div>
+
+       {videoUploadStatus === "error" && <div className="w-full text-center text-xs text-[#f7020b] font-bold mt-2">
+             {videoUploadingErrorMessage || "Oops! Upload failed! Please try again later."}
+        </div>}
+
+  
+
+      </div>
+     
+    </div>
+        </DialogContent>
+       
+      </Dialog>
+
+
+
+
+      <Dialog
+        open={showModal}
+        onClose={handleCloseSuccessModal}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Use Google's location service?"}
+        </DialogTitle>
+        <DialogContent>
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+      <div className="bg-white rounded-xl p-6 shadow-xl w-96 text-center">
+        <h2 className="text-green-600 text-2xl font-bold">🎉 Success!</h2>
+        <p className="text-gray-700 mt-2">
+          You have successfully uploaded your <br /> **Gift Note Video Message**! 🎁✨
+        </p>
+        <button
+          onClick={handleCloseSuccessModal}
+          className="mt-4 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
+        >
+          Got it! ✅
+        </button>
       </div>
     </div>
         </DialogContent>
        
       </Dialog>
+
+
+
      </>
   );
+
+}else{
+  return (
+    <LinkUsedMessage />
+  );
+}
+  
+
+  
 };
 
 export default RecordVideoMainPage;
