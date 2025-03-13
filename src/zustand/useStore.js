@@ -9,6 +9,7 @@ export const useStore = create((set) => ({
   isUploading: false,
   fetchShopTemplatesLoading: false,
   isDeletingShopTemplate: false,
+  isUploadingVideo: false,
   shopTemplateData: [],
   isSavingSettings: false,
   giftNoteSettingsData: {},
@@ -128,6 +129,18 @@ export const useStore = create((set) => ({
       set({isDeletingShopTemplate: false});
       return {message: 'Failed to delete shop template', status: 500};
     }
+  },
+   
+  uploadVideoToFirebaseAPI: async(payload)=>{
+     set({isUploadingVideo: true});
+     try{
+       const response = await axios.post('/api/upload/video', payload);
+       set({isUploadingVideo: false});
+       return response;
+     }catch(error){
+      set({isUploadingVideo: false});
+      return {message: 'Failed to upload video to Firebase', status: 500};
+     }
   }
 
 

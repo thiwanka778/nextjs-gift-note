@@ -1,17 +1,57 @@
 "use client";
-import { useState, useRef,useEffect } from "react";
-import Webcam from "react-webcam";
+import React, { useState, useRef,useEffect } from "react";
 import "./recordVideoStyles.css";
+import {Suspense} from "react";
+import { useSearchParams } from 'next/navigation';
+import { nanoid } from "nanoid";
+import Webcam from "react-webcam";
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import { useStore } from "@/zustand/useStore";
+
+
+function RecordVideoMainPage() {
+  return (
+      <Suspense fallback={<div>Loading...</div>}>
+          <RecordVideoPage />
+      </Suspense>
+  );
+}
+
 
 const RecordVideoPage = () => {
     const webcamRef = useRef(null);
+    const searchParams = useSearchParams();
+    const orderId = searchParams.get("order_id");
+
+    const {isUploadingVideo, uploadVideoToFirebaseAPI} = useStore();
     const [maximumVideoLength, setMaximumVideoLength] = useState(30);
+    const [videoFile, setVideoFile] = useState(null); 
     const mediaRecorderRef = useRef(null);
+    const [open, setOpen] = React.useState(false);
     const [recording, setRecording] = useState(false);
     const [time, setTime] = useState(0);
     const [intervalId, setIntervalId] = useState(null);
     const [videoPreview, setVideoPreview] = useState(null);
     const intervalRef = useRef(null);
+
+    
+
+    const handleClickOpen = () => {
+      setOpen(true);
+    };
+
+
+    const handleVideoSubmitClick=()=>{
+       handleClickOpen();
+    }
+  
+    const handleClose = () => {
+      setOpen(false);
+    };
   
     const startRecording = () => {
       setVideoPreview(null);
@@ -54,6 +94,7 @@ const RecordVideoPage = () => {
         const videoBlob = new Blob([event.data], { type: "video/webm" });
         const videoUrl = URL.createObjectURL(videoBlob);
         setVideoPreview(videoUrl); // Store video for preview
+        setVideoFile(videoBlob);
     };
 };
 
@@ -74,10 +115,37 @@ const formatTime = (seconds) => {
     const secs = (seconds % 60).toString().padStart(2, "0");
     return `${hrs}:${mins}:${secs}`;
 };
+
+
+const handleFileUploadToFirebase = async(file) => {
+
+  
+  
+  // Get the FileList from the input element
+      const currentTimeMillis = new Date().getTime();
+      const fileName = `gift-note-video-${nanoid()}-${currentTimeMillis}`;
+      const filePath = `gift-note-videos/${fileName}.webm`;
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('filePath', filePath);
+      formData.append('orderId', orderId);
+      const uploadResponse = await uploadVideoToFirebaseAPI(formData);
+      if(uploadResponse.status === 200){
+            console.log("Video uploaded successfully");
+            handleClose();
+      }else{
+        console.log("Video upload failed");
+      }
+  
+  
+ 
+};
   
 
   return (
-     <div className="w-full flex flex-col gap-2 min-h-screen p-2 bg-[#030325]">
+    <>
+   
+     <div className="w-full flex flex-col gap-1 min-h-screen p-2 bg-[#030325]">
 
         <div className="w-full flex justify-center items-center">
           <span className="text-white text-2xl tracking-[0.5px] w-full items-center text-center flex justify-center">
@@ -89,6 +157,8 @@ const formatTime = (seconds) => {
 
          
       {!videoPreview && <div className="w-fit flex flex-col gap-1">
+
+     
 
 
       {recording && 
@@ -112,9 +182,22 @@ const formatTime = (seconds) => {
 
 
         {videoPreview &&
-        <video controls className="video-player-styles rounded-lg shadow-lg">
+        <div className="relative w-fit">
+          <button 
+        onClick={() => {setVideoPreview(null); 
+          setRecording(false)}} 
+         className="absolute z-10 top-0 right-0 cursor-pointer flex items-center justify-center px-3 py-[5px] tracking-[0.5px]
+         bg-blue-600 text-white text-xs  rounded-lg shadow-md hover:bg-blue-700 transition active:scale-95"
+    >
+         😉 Try Again
+    </button>
+
+    <video controls className="video-player-styles rounded-lg shadow-lg">
         <source src={videoPreview} type="video/webm" />
         </video>
+
+        </div>
+     
         }
        
 
@@ -123,7 +206,7 @@ const formatTime = (seconds) => {
 
 
     
-      <div className="w-full flex items-center justify-center gap-2 mt-2">
+      <div className="w-full flex items-center justify-center gap-2">
 
               {!recording && !videoPreview && 
               <section onClick={startRecording} className="flex items-center active:scale-90 transition-all duration-100
@@ -135,12 +218,20 @@ const formatTime = (seconds) => {
 
 
               {videoPreview && !recording && (
+                <div className="w-full flex justify-center items-center gap-2">
+                     
+            
+
     <button 
-        onClick={() => {setVideoPreview(null); setRecording(false)}} 
-        className="cursor-pointer flex items-center gap-2 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition active:scale-95"
+        onClick={handleVideoSubmitClick} 
+         className="cursor-pointer flex items-center justify-center px-3 py-[6px] tracking-[0.5px]
+         bg-[#05b005] font-serif text-white text-sm  rounded-lg shadow-md hover:bg-[#05b005]/80 transition active:scale-95"
     >
-         😉 Try Again
+         💌 Submit
     </button>
+
+                </div>
+   
    )}
 
 
@@ -166,7 +257,53 @@ const formatTime = (seconds) => {
       </div>
         
      </div>
+
+     <Dialog
+        open={open}
+        // onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Use Google's location service?"}
+        </DialogTitle>
+        <DialogContent>
+        <div className="fixed inset-0 flex items-center justify-center bg-transparent bg-opacity-10">
+      <div className="bg-[#f7f9ff] rounded-2xl shadow-xl p-6 w-[90%] max-w-md text-center animate-scaleIn">
+        <h2 className="text-xl font-semibold text-gray-800 flex items-center justify-center gap-2">
+          🎁 Confirm Video Submission
+        </h2>
+        <p className="text-gray-600 text-sm mt-2 text-justify">
+          📢 <span className="font-medium">Are you sure you want to submit this video? </span>  
+          Once submitted, you <span className="font-semibold">won't be able to record another video</span> using this link.  
+          This special video message will be sent <span className="font-semibold">directly to your gift recipient</span>. 🎥💌
+        </p>
+
+        <div className="mt-6 flex items-center justify-center gap-2">
+          <button 
+          disabled={isUploadingVideo}
+            onClick={handleFileUploadToFirebase}
+            className="px-3 font-serif py-[5px] tracking-[0.5px] cursor-pointer text-white bg-[#ff030f] rounded-full text-sm
+             shadow-lg hover:bg-red-600 transition-all"
+          >
+            {isUploadingVideo ? "Uploading..." : "✅ Confirm"}
+          </button>
+          <button 
+            onClick={handleClose}
+            className="px-3 py-[5px] font-serif cursor-pointer
+             tracking-[0.5px] text-gray-700 bg-gray-200 rounded-full shadow-md
+             hover:bg-gray-300 transition-all text-sm border border-gray-300"
+          >
+            ⏳ Wait
+          </button>
+        </div>
+      </div>
+    </div>
+        </DialogContent>
+       
+      </Dialog>
+     </>
   );
 };
 
-export default RecordVideoPage;
+export default RecordVideoMainPage;

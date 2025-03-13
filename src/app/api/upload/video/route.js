@@ -15,12 +15,21 @@ export async function POST(req){
           const formData = await req.formData();
           const file = formData.get('file');
           const filePath = formData.get('filePath');
-          const shopIdentifier = formData.get('shopIdentifier');
+          const orderId = formData.get('orderId');
 
-
-          if(!shopIdentifier){
-            return NextResponse.json({ message: 'Shop identifier missing' }, { status: 400 });
+          if(!orderId){
+            return NextResponse.json({ message: 'Order id missing' }, { status: 400 });
           }
+
+           const duplicate  = await prisma.video_message.findMany({
+             where:{
+              order_id: orderId,
+             }
+           })
+
+           if(duplicate.length > 0){
+            return NextResponse.json({ message: 'Duplicate video message' }, { status: 400 });
+           }
       
           if (!file || !filePath) {
             return NextResponse.json({ message: 'File or filePath missing' }, { status: 400 });
@@ -43,7 +52,7 @@ export async function POST(req){
           const filePathRef = uploadTaskSnapshot.ref.fullPath;
           const fileName = uploadTaskSnapshot.ref.name;
 
-          const savedUpload = await prisma.upload.create({
+          const savedVideo = await prisma.video.create({
             data:{
               file_name: fileName,
               file_path: filePathRef,
@@ -54,29 +63,29 @@ export async function POST(req){
             }
           });
 
-          if(!savedUpload){
+          if(!savedVideo){
             return NextResponse.json({ message: 'Failed to save upload' }, { status: 500 });
           }
 
-          const duplicateCheck = await prisma.shop_template.findMany({
+          const duplicateCheck = await prisma.video_message.findMany({
             where:{
-              shop_identifier: shopIdentifier,
-              upload_id: savedUpload.id,
+              order_id: orderId,
+              video_id: savedVideo.id,
             }
           })
 
           if(duplicateCheck.length > 0){
-            return NextResponse.json({ message: 'Duplicate shop template' }, { status: 400 });
+            return NextResponse.json({ message: 'Duplicate video message' }, { status: 400 });
           }
 
-          const savedShopTemplate = await prisma.shop_template.create({
+          const savedVideoMessage = await prisma.video_message.create({
             data:{
-              shop_identifier: shopIdentifier,
-              upload_id: savedUpload.id,
+              order_id: orderId,
+              video_id: savedVideo.id,
             }
           });
 
-          if(!savedShopTemplate){
+          if(!savedVideoMessage){
             return NextResponse.json({ message: 'Failed to save shop template' }, { status: 500 });
           }
           return NextResponse.json({ downloadURL, filePath: filePathRef, fileName, mimeType: uploadTaskSnapshot.metadata.contentType }, { status: 200 });
