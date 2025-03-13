@@ -27,7 +27,7 @@ const RecordVideoPage = () => {
   
 
   return (
-     <div className="w-full h-full p-2">
+     <div className="w-full min-h-screen p-2 bg-[#272729]">
         <div className="w-full flex justify-center">
 
         <Webcam 
@@ -53,6 +53,10 @@ const RecordVideoPage = () => {
       >
         Start Recording
       </button>
+
+      <div className="w-full flex items-center justify-center gap-2">
+            
+      </div>
         
      </div>
   );
