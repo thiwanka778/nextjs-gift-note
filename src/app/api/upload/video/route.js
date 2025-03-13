@@ -1,0 +1,88 @@
+import { NextResponse } from 'next/server';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { firebaseStorage } from '@/config/firebaseConfig';
+import prisma from "../../../../../lib/prisma";
+
+
+
+export async function POST(req){
+    try{
+
+        if (!req.headers.get('content-type').includes('multipart/form-data')) {
+            return NextResponse.json({ message: 'Invalid content type' }, { status: 400 });
+          }
+
+          const formData = await req.formData();
+          const file = formData.get('file');
+          const filePath = formData.get('filePath');
+          const shopIdentifier = formData.get('shopIdentifier');
+
+
+          if(!shopIdentifier){
+            return NextResponse.json({ message: 'Shop identifier missing' }, { status: 400 });
+          }
+      
+          if (!file || !filePath) {
+            return NextResponse.json({ message: 'File or filePath missing' }, { status: 400 });
+          }
+
+          const storageRef = ref(firebaseStorage, filePath);
+
+          const uploadTask = uploadBytesResumable(storageRef, file);
+
+          const uploadTaskSnapshot = await new Promise((resolve, reject) => {
+            uploadTask.on(
+              'state_changed',
+              null,
+              (error) => reject(error),
+              () => resolve(uploadTask.snapshot)
+            );
+          });
+
+          const downloadURL = await getDownloadURL(uploadTaskSnapshot.ref);
+          const filePathRef = uploadTaskSnapshot.ref.fullPath;
+          const fileName = uploadTaskSnapshot.ref.name;
+
+          const savedUpload = await prisma.upload.create({
+            data:{
+              file_name: fileName,
+              file_path: filePathRef,
+              mime_type: uploadTaskSnapshot.metadata.contentType,
+              url: downloadURL,
+              file_size: uploadTaskSnapshot.metadata.size,
+
+            }
+          });
+
+          if(!savedUpload){
+            return NextResponse.json({ message: 'Failed to save upload' }, { status: 500 });
+          }
+
+          const duplicateCheck = await prisma.shop_template.findMany({
+            where:{
+              shop_identifier: shopIdentifier,
+              upload_id: savedUpload.id,
+            }
+          })
+
+          if(duplicateCheck.length > 0){
+            return NextResponse.json({ message: 'Duplicate shop template' }, { status: 400 });
+          }
+
+          const savedShopTemplate = await prisma.shop_template.create({
+            data:{
+              shop_identifier: shopIdentifier,
+              upload_id: savedUpload.id,
+            }
+          });
+
+          if(!savedShopTemplate){
+            return NextResponse.json({ message: 'Failed to save shop template' }, { status: 500 });
+          }
+          return NextResponse.json({ downloadURL, filePath: filePathRef, fileName, mimeType: uploadTaskSnapshot.metadata.contentType }, { status: 200 });
+
+    }catch(error){
+        console.log('Error uploading file:', error);
+        return NextResponse.json({ message: 'File upload failed', error }, { status: 500 });
+    }
+}
