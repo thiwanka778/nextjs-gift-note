@@ -80,7 +80,8 @@ const formatTime = (seconds) => {
      <div className="w-full flex flex-col gap-2 min-h-screen p-2 bg-[#030325]">
 
         <div className="w-full flex justify-center items-center">
-          <span className="text-white text-2xl tracking-[0.5px]">🎁 Record Your Heartfelt Message 🎥💌</span>
+          <span className="text-white text-2xl tracking-[0.5px] w-full items-center text-center flex justify-center">
+            🎁 Record Your Heartfelt Message 🎥💌</span>
         </div>
 
 
