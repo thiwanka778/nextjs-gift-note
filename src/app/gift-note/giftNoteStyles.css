@@ -1,0 +1,56 @@
+.custom-file-upload{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 10px;
+    background-color: black; /* Green background color */
+    color: white; /* White text */
+    border-radius: 8px; /* Rounded corners */
+    font-size: 12px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    border: 2px solid transparent;
+    letter-spacing: 0.5px;
+}
+.save-settings-button{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 10px;
+    background-color: white; /* Green background color */
+    color: black; /* White text */
+    border-radius: 8px; /* Rounded corners */
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    border: 2px solid black;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
+.save-settings-button:active{
+    transform: scale(0.95);
+}
+
+.save-settings-button:hover{
+    border: 2px solid transparent;
+    color: white;
+    background-color: black;
+    font-weight: 400;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+
+.uploaded-file-image{
+    width: auto;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.template-container{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+}
