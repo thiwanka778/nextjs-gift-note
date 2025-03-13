@@ -202,6 +202,9 @@ if(!alreadyUsed ){
         <div className="relative w-fit">
           <button 
         onClick={() => {setVideoPreview(null); 
+          if(typeof window !=='undefined'){
+            window.location.reload();
+          }
           setRecording(false)}} 
          className="absolute z-10 top-0 right-0 cursor-pointer flex items-center justify-center px-3 py-[5px] tracking-[0.5px]
          bg-blue-600 text-white text-xs  rounded-lg shadow-md hover:bg-blue-700 transition active:scale-95"
