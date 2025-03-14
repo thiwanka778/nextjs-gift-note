@@ -200,7 +200,7 @@ if(!alreadyUsed ){
 
 
         {videoPreview &&
-        <div className="relative w-fit">
+        <div className="relative w-fit" style={{width:videoPreview?"":"100%", height:videoPreview?"":"360px"}}>
           <button 
         onClick={() => {setVideoPreview(null); 
           if(typeof window !=='undefined'){
@@ -213,15 +213,15 @@ if(!alreadyUsed ){
          😉 Try Again
     </button>
 
-    {/* <video controls className="video-player-styles rounded-lg shadow-lg">
-        <source src={videoPreview} type="video/webm" />
-        </video> */}
-
+        
         <ReactPlayer url={videoPreview} 
-        playing={true}
+               playing={true}
                muted={true}
                controls={true}
          className="react-player-regular" />
+
+     
+       
 
 
 
