@@ -21,4 +21,30 @@
     }
 }
 
+.video-wrapper{
+    width: 100%;
+    height: auto;
+    display: block;
+    text-align: center;
+}
+
+
+
+.react-player-regular{
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+    width: 640px !important;
+    height: 360px !important;
+}
+
+@media (max-width: 760px) {
+     .react-player-regular{
+        width: 100% !important;
+        height: auto !important;
+     }
+  }
+
+
+
 

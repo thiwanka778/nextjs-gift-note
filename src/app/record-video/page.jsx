@@ -2,6 +2,7 @@
 import React, { useState, useRef,useEffect, useLayoutEffect } from "react";
 import "./recordVideoStyles.css";
 import LinkUsedMessage from "@/components/LinkUsedMessage";
+import ReactPlayer from "react-player";
 import {Suspense} from "react";
 import { useSearchParams } from 'next/navigation';
 import { nanoid } from "nanoid";
@@ -212,9 +213,17 @@ if(!alreadyUsed ){
          😉 Try Again
     </button>
 
-    <video controls className="video-player-styles rounded-lg shadow-lg">
+    {/* <video controls className="video-player-styles rounded-lg shadow-lg">
         <source src={videoPreview} type="video/webm" />
-        </video>
+        </video> */}
+
+        <ReactPlayer url={videoPreview} 
+        playing={true}
+               muted={true}
+               controls={true}
+         className="react-player-regular" />
+
+
 
         </div>
      
