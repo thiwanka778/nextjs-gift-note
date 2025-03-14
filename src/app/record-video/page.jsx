@@ -193,7 +193,7 @@ if(!alreadyUsed ){
           </div>}
        <Webcam 
         ref={webcamRef}
-        className="rounded-lg scale-x-[-1]"
+        className="rounded-lg"
         audio={true} 
           videoConstraints={{
             facingMode: "user"
@@ -217,12 +217,17 @@ if(!alreadyUsed ){
     </button>
 
         
-        <ReactPlayer url={videoPreview} 
+        {/* <ReactPlayer url={videoPreview} 
                playing={false}
                muted={true}
                controls={true}
                playsinline={true}
-         className="react-player-regular" />
+         className="react-player-regular" /> */}
+
+<video controls autoPlay muted className="rounded-lg border border-gray-400">
+    {/* <source src={videoPreview} type="video/webm" /> */}
+    <source src={videoPreview} type="video/mp4" />
+</video>
 
      
        
