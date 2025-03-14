@@ -16,6 +16,9 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { useStore } from "@/zustand/useStore";
 
 
+
+
+
 function RecordVideoMainPage() {
   return (
       <Suspense fallback={<div>Loading...</div>}>
@@ -95,7 +98,7 @@ const RecordVideoPage = () => {
       mediaRecorderRef.current.start();
   };
 
-  const stopRecording = () => {
+  const stopRecording =  () => {
     setRecording(false);
 
     // Stop timer
@@ -108,6 +111,7 @@ const RecordVideoPage = () => {
     mediaRecorderRef.current.ondataavailable = (event) => {
         const videoBlob = new Blob([event.data], { type: "video/webm" });
         const videoUrl = URL.createObjectURL(videoBlob);
+
         setVideoPreview(videoUrl); // Store video for preview
         setVideoFile(videoBlob);
     };
@@ -189,8 +193,7 @@ if(!alreadyUsed ){
           </div>}
        <Webcam 
         ref={webcamRef}
-        className="rounded-lg"
-
+        className="rounded-lg scale-x-[-1]"
         audio={true} 
           videoConstraints={{
             facingMode: "user"
@@ -215,9 +218,10 @@ if(!alreadyUsed ){
 
         
         <ReactPlayer url={videoPreview} 
-               playing={true}
+               playing={false}
                muted={true}
                controls={true}
+               playsinline={true}
          className="react-player-regular" />
 
      
