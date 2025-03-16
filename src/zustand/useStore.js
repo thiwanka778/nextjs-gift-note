@@ -9,6 +9,11 @@ export const useStore = create((set) => ({
   isUploading: false,
   fetchShopTemplatesLoading: false,
   isDeletingShopTemplate: false,
+  videoUploadStatus: "idle",
+  isCheckingOrderIdLoading: true,
+  videoUploadingErrorMessage:"",
+  alreadyUsed: true,
+  isUploadingVideo: false,
   shopTemplateData: [],
   isSavingSettings: false,
   giftNoteSettingsData: {},
@@ -127,6 +132,33 @@ export const useStore = create((set) => ({
     }catch(error){
       set({isDeletingShopTemplate: false});
       return {message: 'Failed to delete shop template', status: 500};
+    }
+  },
+   
+  uploadVideoToFirebaseAPI: async(payload)=>{
+     set({isUploadingVideo: true, videoUploadStatus: "loading" ,
+      videoUploadingErrorMessage:"",
+      });
+     try{
+       const response = await axios.post('/api/upload/video', payload);
+       set({isUploadingVideo: false, videoUploadStatus: "success",
+        videoUploadingErrorMessage:""
+       });
+       return response;
+     }catch(error){
+      set({isUploadingVideo: false, videoUploadStatus: "error", videoUploadingErrorMessage: error?.response?.data?.message || "Oops! Upload failed! Please try again later."});
+      return {message: 'Failed to upload video to Firebase', status: 500};
+     }
+  },
+
+  checkOrderIdExistAPI: async(id)=>{
+    set({isCheckingOrderIdLoading: true});
+    try{
+      const response = await axios.post('/api/check-order-id', {orderId: id});
+      set({isCheckingOrderIdLoading: false, alreadyUsed: response.data.alreadyUsed});
+    }catch(error){
+      set({isCheckingOrderIdLoading: false, alreadyUsed: false});
+      return {message: 'Failed to check order id exist', status: 500};
     }
   }
 

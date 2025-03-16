@@ -1,0 +1,45 @@
+.recording-indicator {
+    width: 12px; /* Adjust size as needed */
+    height: 12px;
+    background-color: red;
+    border-radius: 50%;
+    animation: pulse 1.2s infinite ease-in-out;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 0.6;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+
+
+
+
+.react-player-regular{
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+    width: 640px !important;
+    height: 360px !important;
+}
+
+@media (max-width: 760px) {
+     .react-player-regular{
+        width: 100% !important;
+        height: auto !important;
+     }
+  }
+
+
+
+

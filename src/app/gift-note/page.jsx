@@ -1,4 +1,5 @@
 'use client'
+import { Suspense } from 'react';
 import React,{useState, useEffect} from 'react';
 import "./giftNoteStyles.css";
 import { Checkbox } from 'antd';
@@ -17,6 +18,15 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { useStore } from '@/zustand/useStore';
 
 // f3eb956b-58dd-4ea2-87a3-7f77d7bf195f
+
+
+function GiftNotePage() {
+  return (
+      <Suspense fallback={<div>Loading...</div>}>
+          <GiftNote />
+      </Suspense>
+  );
+}
 
 const GiftNote = () => {
     const searchParams = useSearchParams();
@@ -572,4 +582,4 @@ const GiftNote = () => {
   )
 }
 
-export default GiftNote;
+export default GiftNotePage;
