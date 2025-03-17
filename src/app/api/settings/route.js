@@ -7,18 +7,7 @@ export async function POST(req){
 
         // Set CORS headers
 
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS,PUT,DELETE');
-  res.setHeader('Access-Control-Allow-Headers', '*');
-
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-    
-
     try{
-
-
 
        const body = await req.json();
        const {shop_identifier} = body;
