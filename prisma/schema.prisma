@@ -18,27 +18,14 @@ model gift_note_settings {
   enable_gift_notes                    Boolean  @default(false)
   enable_video_messages                Boolean  @default(false)
   apply_service_charge                 Boolean  @default(false)
-  enable_delivery_date                 Boolean  @default(false)
   service_charge_for_physical_delivery Int      @default(0)
   service_charge_for_virtual_delivery  Int      @default(0)
   max_video_length                     Int      @default(0)
   max_message_length                   Int      @default(0)
   shop_identifier                      String   @unique
+  currency                             String   @default("LKR")
   created_at                           DateTime @default(now())
   updated_at                           DateTime @updatedAt
-}
-
-model upload {
-  id            Int             @id @default(autoincrement())
-  file_name     String
-  file_path     String
-  mime_type     String?
-  file_size     Int?
-  url           String?
-  created_at    DateTime        @default(now())
-  updated_at    DateTime        @updatedAt
-  is_deleted    Boolean         @default(false)
-  shop_template shop_template[]
 }
 
 model video {
@@ -63,6 +50,19 @@ model video_message {
   updated_at DateTime @updatedAt
 
   @@unique([order_id, video_id])
+}
+
+model upload {
+  id            Int             @id @default(autoincrement())
+  file_name     String
+  file_path     String
+  mime_type     String?
+  file_size     Int?
+  url           String?
+  created_at    DateTime        @default(now())
+  updated_at    DateTime        @updatedAt
+  is_deleted    Boolean         @default(false)
+  shop_template shop_template[]
 }
 
 model shop_template {
