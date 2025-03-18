@@ -12,10 +12,10 @@ const CORS_HEADERS = {
 };
 
 const s3 = new S3Client({
-    region: process.env.AWS_REGION,
+    region: process.env.TEST_AWS_REGION,
     credentials: {
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+      accessKeyId: process.env.TEST_AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.TEST_AWS_SECRET_ACCESS_KEY,
     },
   });
 
@@ -75,7 +75,7 @@ export async function POST(req){
           const fileName = `${file.name}-${randomString}-${milliseconds}`;
           const fileKey = `templates/${fileName}`;
           const params = {
-            Bucket: process.env.AWS_BUCKET_NAME,
+            Bucket: process.env.TEST_AWS_BUCKET_NAME,
             Key: fileKey,
             Body: buffer,
             ContentType: file.type,
@@ -85,12 +85,12 @@ export async function POST(req){
 
              // Generate Pre-signed URL for accessing the file
        const command = new GetObjectCommand({
-        Bucket: process.env.AWS_BUCKET_NAME,
+        Bucket: process.env.TEST_AWS_BUCKET_NAME,
         Key: fileKey,
         });
 
        const headCommand = new HeadObjectCommand({
-        Bucket: process.env.AWS_BUCKET_NAME,
+        Bucket: process.env.TEST_AWS_BUCKET_NAME,
         Key: fileKey
        });
 
