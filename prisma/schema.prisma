@@ -91,13 +91,12 @@ model gift_order{
   recipient_email String?
   recipient_phone String?
   occasion String?
-  occasion_date DateTime?
+  occasion_date String?
   relationship String?
   message String
   delivery_method String?
   allow_record_video Boolean?
   shop_template_id Int
-  delivery_charge Int?
   // need to create status enum
   status gift_order_status @default(PENDING)
   created_at DateTime @default(now())
