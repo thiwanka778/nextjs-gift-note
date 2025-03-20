@@ -1,3 +1,3 @@
 export default [
-    "test-nilstore.myshopify.com"
+    "test-nilstore.myshopify.com","jgrou.myshopify.com"
 ]
