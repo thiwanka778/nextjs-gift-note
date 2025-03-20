@@ -78,3 +78,38 @@ model shop_template {
 
   @@unique([shop_identifier, upload_id])
 }
+
+model gift_order{
+  id Int @id @default(autoincrement())
+  shop_identifier String
+  order_id String?
+  note String @unique
+  sender_name String
+  sender_email String?
+  sender_phone String?
+  recipient_name String
+  recipient_email String?
+  recipient_phone String?
+  occasion String?
+  occasion_date DateTime?
+  relationship String?
+  message String
+  delivery_method String?
+  allow_record_video Boolean?
+  shop_template_id Int
+  delivery_charge Int?
+  // need to create status enum
+  status gift_order_status @default(PENDING)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([shop_identifier, order_id, status,note])
+  
+}
+
+
+enum gift_order_status {
+  PENDING
+  COMPLETED
+}
+
