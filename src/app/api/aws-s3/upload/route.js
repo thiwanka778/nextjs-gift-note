@@ -84,10 +84,10 @@ export async function POST(req){
           await s3.send(new PutObjectCommand(params));
 
              // Generate Pre-signed URL for accessing the file
-       const command = new GetObjectCommand({
-        Bucket: process.env.TEST_AWS_BUCKET_NAME,
-        Key: fileKey,
-        });
+      //  const command = new GetObjectCommand({
+      //   Bucket: process.env.TEST_AWS_BUCKET_NAME,
+      //   Key: fileKey,
+      //   });
 
        const headCommand = new HeadObjectCommand({
         Bucket: process.env.TEST_AWS_BUCKET_NAME,
@@ -95,10 +95,10 @@ export async function POST(req){
        });
 
 
-           const signedUrl = await getSignedUrl(s3, command, { expiresIn: 60*60*24*3 });
+          //  const signedUrl = await getSignedUrl(s3, command, { expiresIn: 60*60*24*3 });
 
             // Generate File URL
-        //    const fileUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileKey}`;
+           const fileUrl = `https://${process.env.TEST_AWS_BUCKET_NAME}.s3.${process.env.TEST_AWS_REGION}.amazonaws.com/${fileKey}`;
 
         
 
@@ -111,7 +111,7 @@ export async function POST(req){
                 file_path: fileKey,
                 mime_type: headResponse.ContentType,
                 file_size: headResponse.ContentLength,
-                url: signedUrl,
+                url: fileUrl,
               }
            });
 
