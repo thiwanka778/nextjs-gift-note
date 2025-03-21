@@ -1,6 +1,13 @@
 import { NextResponse } from 'next/server';
 import prisma from '../../../../../lib/prisma';
 
+
+const CORS_HEADERS = {
+    'Access-Control-Allow-Origin': '*', // Allow all origins
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS, PUT, DELETE',
+    'Access-Control-Allow-Headers': '*',
+  };
+
 export async function POST(req, { params }) {
     try {
         // Extract shopIdentifier from the URL
@@ -8,7 +15,7 @@ export async function POST(req, { params }) {
          const {id } = body;
 
          if(!id){
-            return NextResponse.json({ message: 'Template id missing' }, { status: 400 });
+            return NextResponse.json({ message: 'Template id missing' }, { status: 400, headers: CORS_HEADERS });
          }
 
          const findShopTemplate = await prisma.shop_template.findUnique({
@@ -16,7 +23,7 @@ export async function POST(req, { params }) {
          })
 
          if(!findShopTemplate){
-            return NextResponse.json({ message: 'Template not found' }, { status: 404 });
+            return NextResponse.json({ message: 'Template not found' }, { status: 404, headers: CORS_HEADERS });
          }
 
 
@@ -27,9 +34,9 @@ export async function POST(req, { params }) {
             }
         });
 
-        return NextResponse.json({ message: 'Template status updated' }, { status: 200 });
+        return NextResponse.json({ message: 'Template status updated' }, { status: 200 , headers: CORS_HEADERS});
          
     } catch (error) {
-        return NextResponse.json({ message: 'Error retrieving shop identifier', error }, { status: 500 });
+        return NextResponse.json({ message: 'Error retrieving shop identifier', error }, { status: 500, headers: CORS_HEADERS });
     }
 }

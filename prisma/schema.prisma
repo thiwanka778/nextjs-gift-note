@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -18,14 +12,14 @@ model gift_note_settings {
   enable_gift_notes                    Boolean  @default(false)
   enable_video_messages                Boolean  @default(false)
   apply_service_charge                 Boolean  @default(false)
-  service_charge_for_physical_delivery Int      @default(0)
-  service_charge_for_virtual_delivery  Int      @default(0)
   max_video_length                     Int      @default(0)
   max_message_length                   Int      @default(0)
-  shop_identifier                      String   @unique
-  currency                             String   @default("LKR")
   created_at                           DateTime @default(now())
+  shop_identifier                      String   @unique
   updated_at                           DateTime @updatedAt
+  service_charge_for_physical_delivery Int      @default(0)
+  service_charge_for_virtual_delivery  Int      @default(0)
+  currency                             String   @default("LKR")
 }
 
 model video {
@@ -45,9 +39,9 @@ model video_message {
   id         Int      @id @default(autoincrement())
   order_id   String
   video_id   Int
-  video      video    @relation(fields: [video_id], references: [id])
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+  video      video    @relation(fields: [video_id], references: [id])
 
   @@unique([order_id, video_id])
 }
@@ -56,59 +50,55 @@ model upload {
   id            Int             @id @default(autoincrement())
   file_name     String
   file_path     String
-  mime_type     String?
   file_size     Int?
   url           String?
   created_at    DateTime        @default(now())
   updated_at    DateTime        @updatedAt
   is_deleted    Boolean         @default(false)
+  mime_type     String?
   shop_template shop_template[]
 }
 
 model shop_template {
   id              Int      @id @default(autoincrement())
   shop_identifier String
-  // I need to add upload_id from upload table
   upload_id       Int
-  upload          upload   @relation(fields: [upload_id], references: [id])
+ 
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt
   is_deleted      Boolean  @default(false)
   is_active       Boolean  @default(true)
+   upload          upload   @relation(fields: [upload_id], references: [id])
 
   @@unique([shop_identifier, upload_id])
 }
 
-model gift_order{
-  id Int @id @default(autoincrement())
-  shop_identifier String
-  order_id String?
-  note String @unique
-  sender_name String
-  sender_email String?
-  sender_phone String?
-  recipient_name String
-  recipient_email String?
-  recipient_phone String?
-  occasion String?
-  occasion_date String?
-  relationship String?
-  message String
-  delivery_method String?
+model gift_order {
+  id                 Int               @id @default(autoincrement())
+  shop_identifier    String
+  order_id           String?
+  note               String            @unique
+  sender_name        String
+  sender_email       String?
+  sender_phone       String?
+  recipient_name     String
+  recipient_email    String?
+  recipient_phone    String?
+  occasion           String?
+  occasion_date      String?
+  relationship       String?
+  message            String
+  delivery_method    String?
   allow_record_video Boolean?
-  shop_template_id Int
-  // need to create status enum
-  status gift_order_status @default(PENDING)
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  shop_template_id   Int
+  status             gift_order_status @default(PENDING)
+  created_at         DateTime          @default(now())
+  updated_at         DateTime          @updatedAt
 
-  @@index([shop_identifier, order_id, status,note])
-  
+  @@index([shop_identifier, order_id, status, note])
 }
-
 
 enum gift_order_status {
   PENDING
   COMPLETED
 }
-
