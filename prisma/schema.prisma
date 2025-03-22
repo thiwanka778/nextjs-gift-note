@@ -98,7 +98,31 @@ model gift_order {
   @@index([shop_identifier, order_id, status, note])
 }
 
+
 enum gift_order_status {
   PENDING
   COMPLETED
+}
+
+
+model currency{
+  id Int @id @default(autoincrement())
+  name String?
+  symbol String?
+  country String?
+  code String @unique
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+model shop_currency{
+  id Int @id @default(autoincrement())
+  shop_identifier String
+  code String
+  rate Decimal @default(0)
+  is_default Boolean @default(false)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@unique([shop_identifier, code])
+  
 }
