@@ -18,19 +18,6 @@ export async function POST(req){
        const body = await req.json();
        const {data} = body;
 
-    //    const newArray = data.map((item)=>{
-    //        return {
-    //          code: item.alphabeticcode,
-    //          name: item.currency,
-    //          country: item.entity
-    //        }
-    //    })
-
-
-    //    return NextResponse.json({message: "Currencies saved successfully", data: newArray}, {status: 200,
-    //     headers: CORS_HEADERS
-    //    });
-
 
 
       let currencyToCreate = [];

@@ -17,8 +17,8 @@ model gift_note_settings {
   created_at                           DateTime @default(now())
   shop_identifier                      String   @unique
   updated_at                           DateTime @updatedAt
-  service_charge_for_physical_delivery Int      @default(0)
-  service_charge_for_virtual_delivery  Int      @default(0)
+  service_charge_for_physical_delivery Decimal      @default(0)
+  service_charge_for_virtual_delivery  Decimal     @default(0)
   currency                             String   @default("LKR")
 }
 

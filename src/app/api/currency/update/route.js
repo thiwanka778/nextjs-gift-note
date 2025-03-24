@@ -62,8 +62,8 @@ export async function POST(req){
                         data:{
                             shop_identifier: shopIdentifier,
                             code: item.code,
-                            rate: item.rate || 0,
-                            is_default: item.is_default || false
+                            rate: item.is_default===true?1: Number(item.rate) || 0,
+                            is_default: item.is_default
                         }
                     })
 
@@ -74,8 +74,8 @@ export async function POST(req){
                             id: duplicate.id
                         },
                         data:{
-                            rate: item.rate || duplicate.rate,
-                            is_default: item.is_default || duplicate.is_default
+                            rate: item.is_default===true?1: Number(item.rate) || duplicate.rate,
+                            is_default: item.is_default
                         }
                     })
                 }

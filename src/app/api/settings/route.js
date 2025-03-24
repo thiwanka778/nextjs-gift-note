@@ -36,7 +36,10 @@ export async function POST(req){
        if(!settings){
         // we need to create
         const newSettings = await prisma.gift_note_settings.create({
-            data: body
+            data: {...body, 
+              service_charge_for_physical_delivery: Number(body.service_charge_for_physical_delivery) || 0, 
+              service_charge_for_virtual_delivery: Number(body.service_charge_for_virtual_delivery) || 0
+            }
         });
        }else{
         // we need to update
@@ -44,7 +47,10 @@ export async function POST(req){
             where:{
                 id: settings.id
             },
-            data: body
+            data:{...body, 
+              service_charge_for_physical_delivery: Number(body.service_charge_for_physical_delivery) || 0, 
+              service_charge_for_virtual_delivery: Number(body.service_charge_for_virtual_delivery) || 0
+            }
         })
        }
 

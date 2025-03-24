@@ -77,7 +77,7 @@ export async function GET(req, { params }){
             const newObject = {
                 code: currency.code,
                 rate:shopCurrency? shopCurrency?.rate ? shopCurrency.rate: 0 :0,
-                is_default: shopCurrency? shopCurrency?.is_default ? shopCurrency.is_default : false : false,
+                is_default: shopCurrency?  shopCurrency.is_default: false,
                 name: currency.name,
                 country: currency.country,
             }
@@ -95,6 +95,8 @@ export async function GET(req, { params }){
     
         return indexA - indexB; // Sort based on `preferredCodes` order
     });
+
+
 
        return NextResponse.json({message: "Updated successfully",data: sortedArray}, {status: 200,
          headers: CORS_HEADERS
