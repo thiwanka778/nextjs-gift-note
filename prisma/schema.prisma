@@ -20,6 +20,10 @@ model gift_note_settings {
   service_charge_for_physical_delivery Decimal      @default(0)
   service_charge_for_virtual_delivery  Decimal     @default(0)
   currency                             String   @default("LKR")
+  physical_variant_id String?
+  physical_inventory_item_id String?
+  virtual_variant_id String?
+  virtual_inventory_item_id String?
 }
 
 model video {
