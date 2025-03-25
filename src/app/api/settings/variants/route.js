@@ -1,5 +1,7 @@
+
+
 import { NextResponse } from 'next/server';
-import prisma from '../../../../lib/prisma';
+import prisma from '../../../../../lib/prisma';
 import valid_stores from '@/config/valid_stores';
 
 
@@ -37,15 +39,14 @@ export async function POST(req){
         // we need to create
         const newSettings = await prisma.gift_note_settings.create({
             data: {
-              enable_gift_notes: body.enable_gift_notes,
-              enable_video_messages: body.enable_video_messages,
-              apply_service_charge: body.apply_service_charge,
-              max_video_length: body.max_video_length,
-              max_message_length: body.max_message_length,
+            
               shop_identifier: body.shop_identifier,
-              currency: body.currency,
-              service_charge_for_physical_delivery: Number(body.service_charge_for_physical_delivery) || 0, 
-              service_charge_for_virtual_delivery: Number(body.service_charge_for_virtual_delivery) || 0
+              physical_variant_id: body.physical_variant_id,
+              virtual_variant_id: body.virtual_variant_id,
+              physical_inventory_item_id: body.physical_inventory_item_id,
+              virtual_inventory_item_id: body.virtual_inventory_item_id,
+              physical_product_id: body.physical_product_id,
+              virtual_product_id: body.virtual_product_id,
             }
         });
        }else{
@@ -55,15 +56,14 @@ export async function POST(req){
                 id: settings.id
             },
             data:{
-               enable_gift_notes: body.enable_gift_notes,
-              enable_video_messages: body.enable_video_messages,
-              apply_service_charge: body.apply_service_charge,
-              max_video_length: body.max_video_length,
-              max_message_length: body.max_message_length,
+               
               shop_identifier: body.shop_identifier,
-              currency: body.currency,
-              service_charge_for_physical_delivery: Number(body.service_charge_for_physical_delivery) || 0, 
-              service_charge_for_virtual_delivery: Number(body.service_charge_for_virtual_delivery) || 0
+              physical_variant_id: body.physical_variant_id,
+              virtual_variant_id: body.virtual_variant_id,
+              physical_inventory_item_id: body.physical_inventory_item_id,
+              virtual_inventory_item_id: body.virtual_inventory_item_id,
+              physical_product_id: body.physical_product_id,
+              virtual_product_id: body.virtual_product_id,
             }
         })
        }

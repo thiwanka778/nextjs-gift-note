@@ -24,6 +24,8 @@ model gift_note_settings {
   physical_inventory_item_id String?
   virtual_variant_id String?
   virtual_inventory_item_id String?
+  physical_product_id String?
+  virtual_product_id String?
 }
 
 model video {
