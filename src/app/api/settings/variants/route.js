@@ -18,7 +18,7 @@ export async function POST(req){
     try{
 
        const body = await req.json();
-       const {shop_identifier} = body;
+       const {shop_identifier, physical_variant_id, virtual_variant_id,physical_product_id,virtual_product_id} = body;
 
 
        if(!shop_identifier){
@@ -29,6 +29,10 @@ export async function POST(req){
         return NextResponse.json({ message: 'Invalid shop identifier' }, { status: 400, headers: CORS_HEADERS });
        }
 
+       if(!physical_variant_id && !virtual_variant_id && !physical_product_id && !virtual_product_id){
+        return NextResponse.json({ message: 'No variant or product id provided' }, { status: 400, headers: CORS_HEADERS });
+       }
+
        const settings = await prisma.gift_note_settings.findUnique({
          where: {
             shop_identifier: shop_identifier
@@ -36,10 +40,16 @@ export async function POST(req){
        });
 
        if(!settings){
-        // we need to create
-        const newSettings = await prisma.gift_note_settings.create({
-            data: {
-            
+           console.log('Settings not found');
+       }else{
+        // we need to update
+        if(!settings.physical_variant_id && !settings.virtual_variant_id){
+
+          const updatedSettings = await prisma.gift_note_settings.update({
+            where:{
+                id: settings.id
+            },
+            data:{
               shop_identifier: body.shop_identifier,
               physical_variant_id: body.physical_variant_id,
               virtual_variant_id: body.virtual_variant_id,
@@ -49,23 +59,9 @@ export async function POST(req){
               virtual_product_id: body.virtual_product_id,
             }
         });
-       }else{
-        // we need to update
-        const updatedSettings = await prisma.gift_note_settings.update({
-            where:{
-                id: settings.id
-            },
-            data:{
-               
-              shop_identifier: body.shop_identifier,
-              physical_variant_id: body.physical_variant_id,
-              virtual_variant_id: body.virtual_variant_id,
-              physical_inventory_item_id: body.physical_inventory_item_id,
-              virtual_inventory_item_id: body.virtual_inventory_item_id,
-              physical_product_id: body.physical_product_id,
-              virtual_product_id: body.virtual_product_id,
-            }
-        })
+
+        }
+       
        }
 
        return NextResponse.json({message: "Settings saved successfully"}, {status: 200,

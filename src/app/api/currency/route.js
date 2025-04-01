@@ -18,31 +18,31 @@ export async function POST(req){
        const body = await req.json();
        const {data} = body;
 
-
-
-      let currencyToCreate = [];
       
        for(const item of data){
           if(item && item?.code && item.code.trim()!==""){
+
              const duplicate = await prisma.currency.findUnique({
                 where:{
                     code: item.code
                 }
              });
+               
              if(!duplicate){
-                currencyToCreate.push({
-                    code: item.code,
-                    name: item.name || "",
-                    country: item.country || ""
+                
+                await prisma.currency.create({
+                    data: {
+                        code: item.code,
+                        name: item.name || "",
+                        country: item.country || ""
+                    }
                 })
                
              }
           }
        }
 
-       await prisma.currency.createMany({
-        data: currencyToCreate
-       })
+   
 
        const dbcurrencies = await prisma.currency.findMany();
 

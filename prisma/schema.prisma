@@ -132,3 +132,14 @@ model shop_currency{
   @@unique([shop_identifier, code])
   
 }
+
+
+model otp {
+  id Int @id @default(autoincrement())
+  phone String @unique
+  code String
+  expires_at DateTime
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+}
