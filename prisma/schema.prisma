@@ -143,3 +143,31 @@ model otp {
   updated_at DateTime @updatedAt
 
 }
+
+
+model schedule_delivery_setting{
+  id Int @id @default(autoincrement())
+  
+  shop_identifier String @unique
+  enable_delivery Boolean @default(false)
+  allow_date_pick Boolean @default(false)
+  minimum_days Int @default(5)
+  apply_delivery_charge Boolean @default(false)
+  within_colombo_delivery_charge Decimal @default(0)
+  outside_colombo_delivery_charge Decimal @default(0)
+
+  within_colombo_shopify_product_id String?
+  within_colombo_shopify_variant_id String?
+  within_colombo_shopify_inventory_item_id String?
+
+  outside_colombo_shopify_product_id String?
+  outside_colombo_shopify_variant_id String?
+  outside_colombo_shopify_inventory_item_id String?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  
+}
+
+
+
