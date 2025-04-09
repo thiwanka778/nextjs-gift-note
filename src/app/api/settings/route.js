@@ -60,7 +60,6 @@ export async function POST(req){
               apply_service_charge: body.apply_service_charge,
               max_video_length: Number(body.max_video_length) || 0,
               max_message_length: Number(body.max_message_length) || 0,
-              shop_identifier: body.shop_identifier,
               currency: body.currency,
               service_charge_for_physical_delivery: Number(body.service_charge_for_physical_delivery) || 0, 
               service_charge_for_virtual_delivery: Number(body.service_charge_for_virtual_delivery) || 0

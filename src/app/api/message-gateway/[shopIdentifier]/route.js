@@ -22,17 +22,13 @@ export async function GET(req, { params }) {
             return NextResponse.json({ message: 'Invalid shop identifier' }, { status: 400, headers: CORS_HEADERS });
         }
         
-        const settings = await prisma.gift_note_settings.findUnique({
+        const settings = await prisma.message_gateway.findMany({
             where:{
-                shop_identifier: shopIdentifier,
+                shop_identifier: shopIdentifier
             }
         })
 
-        if(!settings){
-            return NextResponse.json({ message: 'Settings not found' }, { status: 200, headers: CORS_HEADERS });
-        }
-
-        return NextResponse.json({...settings,message:"Settings retrieved successfully"}, { status: 200, headers: CORS_HEADERS });
+        return NextResponse.json({message:"Settings retrieved successfully", content: settings}, { status: 200, headers: CORS_HEADERS });
 
     } catch (error) {
         return NextResponse.json({ message: 'Error retrieving shop identifier', error }, { status: 500, headers: CORS_HEADERS });

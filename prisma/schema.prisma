@@ -170,4 +170,35 @@ model schedule_delivery_setting{
 }
 
 
+model message_gateway{
+  id Int @id @default(autoincrement())
+  shop_identifier String
+  name String
+  is_default Boolean @default(false)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@unique([shop_identifier, name])
+ 
+}
+
+model payment_method{
+  id Int @id @default(autoincrement())
+  shop_identifier String
+  name String
+  is_verification Boolean @default(false)
+  service_charge Decimal @default(0)
+  shopify_product_id String?
+  shopify_variant_id String?
+  shopify_inventory_item_id String?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+ 
+}
+
+
+
+
+
 

@@ -42,6 +42,7 @@ export async function POST(req){
        if(!settings){
            console.log('Settings not found');
        }else{
+
         // we need to update
         if(!settings.physical_variant_id && !settings.virtual_variant_id){
 
@@ -50,12 +51,11 @@ export async function POST(req){
                 id: settings.id
             },
             data:{
-              shop_identifier: body.shop_identifier,
               physical_variant_id: body.physical_variant_id,
-              virtual_variant_id: body.virtual_variant_id,
               physical_inventory_item_id: body.physical_inventory_item_id,
-              virtual_inventory_item_id: body.virtual_inventory_item_id,
               physical_product_id: body.physical_product_id,
+              virtual_variant_id: body.virtual_variant_id,
+              virtual_inventory_item_id: body.virtual_inventory_item_id,
               virtual_product_id: body.virtual_product_id,
             }
         });
