@@ -11,7 +11,7 @@ const CORS_HEADERS = {
 
   
 
-export async function PUT(req){
+export async function POST(req){
 
         // Set CORS headers
 
