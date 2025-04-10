@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '../../../../../lib/prisma';
+import { validateGatewayRequest } from '../../../../../lib/validateRequest';
 import valid_stores from '@/config/valid_stores';
 
 
@@ -18,6 +19,8 @@ export async function POST(req){
     try{
 
        const body = await req.json();
+      
+
         
        if(!body){
         return NextResponse.json({ message: 'Body missing' }, { status: 400, headers: CORS_HEADERS });
@@ -34,15 +37,25 @@ export async function POST(req){
        
        const { searchParams } = new URL(req.url);
        const shop_identifier = searchParams.get('shop_identifier');
+       const sessionToken = searchParams.get('x-shopify-session-token');
 
+       if(!sessionToken){
+        return NextResponse.json({ message: 'Session token missing' }, { status: 400, headers: CORS_HEADERS });
+       }
        
 
+   
        if(!shop_identifier){
         return NextResponse.json({ message: 'Shop identifier missing' }, { status: 400, headers: CORS_HEADERS });
        }
 
        if(!valid_stores.includes(shop_identifier)){
         return NextResponse.json({ message: 'Invalid shop identifier' }, { status: 400, headers: CORS_HEADERS });
+       }
+
+       const validation = await validateGatewayRequest(sessionToken,shop_identifier);
+       if(!validation.isValid){
+        return validation.response;
        }
 
 

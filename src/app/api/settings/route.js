@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '../../../../lib/prisma';
 import valid_stores from '@/config/valid_stores';
+import { validateGatewayRequest } from '../../../../lib/validateRequest';
 
 
 const CORS_HEADERS = {
@@ -13,10 +14,16 @@ export async function POST(req){
 
         // Set CORS headers
 
+
+    
+
     try{
 
        const body = await req.json();
        const {shop_identifier} = body;
+       const { searchParams } = new URL(req.url);
+       const sessionToken = searchParams.get('x-shopify-session-token');
+
 
 
        if(!shop_identifier){
@@ -26,6 +33,12 @@ export async function POST(req){
        if(!valid_stores.includes(shop_identifier)){
         return NextResponse.json({ message: 'Invalid shop identifier' }, { status: 400, headers: CORS_HEADERS });
        }
+
+       const validation = await validateGatewayRequest(sessionToken,shop_identifier);
+       if (!validation.isValid) {
+        console.log("VALIDATION",validation);
+        return validation.response;
+      }
 
        const settings = await prisma.gift_note_settings.findUnique({
          where: {

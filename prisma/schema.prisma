@@ -193,8 +193,16 @@ model payment_method{
   shopify_inventory_item_id String?
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+}
 
- 
+model credential {
+  id Int @id @default(autoincrement())
+  shop_identifier String @unique
+  access_token String?
+  api_key String?
+  secret_key String?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 
