@@ -18,7 +18,8 @@ export async function POST(req){
     try{
 
        const body = await req.json();
-       const {shop_identifier, physical_variant_id, virtual_variant_id,physical_product_id,virtual_product_id} = body;
+       const {shop_identifier, physical_variant_id, virtual_variant_id,physical_product_id,virtual_product_id,
+         physical_inventory_item_id,virtual_inventory_item_id} = body;
 
 
        if(!shop_identifier){
@@ -29,9 +30,9 @@ export async function POST(req){
         return NextResponse.json({ message: 'Invalid shop identifier' }, { status: 400, headers: CORS_HEADERS });
        }
 
-       if(!physical_variant_id && !virtual_variant_id && !physical_product_id && !virtual_product_id){
-        return NextResponse.json({ message: 'No variant or product id provided' }, { status: 400, headers: CORS_HEADERS });
-       }
+      //  if(!physical_variant_id && !virtual_variant_id && !physical_product_id && !virtual_product_id){
+      //   return NextResponse.json({ message: 'No variant or product id provided' }, { status: 400, headers: CORS_HEADERS });
+      //  }
 
        const settings = await prisma.gift_note_settings.findUnique({
          where: {
@@ -43,25 +44,34 @@ export async function POST(req){
            console.log('Settings not found');
        }else{
 
-        // we need to update
-        if(!settings.physical_variant_id && !settings.virtual_variant_id){
+           // we need to update
+           const updateData={};
+           const fields = [
+            'physical_variant_id',
+            'virtual_variant_id',
+            'physical_product_id',
+            'virtual_product_id',
+            'physical_inventory_item_id',
+            'virtual_inventory_item_id'
+          ];
 
-          const updatedSettings = await prisma.gift_note_settings.update({
-            where:{
-                id: settings.id
-            },
-            data:{
-              physical_variant_id: body.physical_variant_id,
-              physical_inventory_item_id: body.physical_inventory_item_id,
-              physical_product_id: body.physical_product_id,
-              virtual_variant_id: body.virtual_variant_id,
-              virtual_inventory_item_id: body.virtual_inventory_item_id,
-              virtual_product_id: body.virtual_product_id,
+          for (const field of fields) {
+            const value = body[field];
+            if (!settings[field] && value && value.trim() !== "") {
+              updateData[field] = value;
             }
-        });
+          }
 
-        }
-       
+          if (Object.keys(updateData).length > 0) {
+            await prisma.gift_note_settings.update({
+              where: {
+                id: settings.id
+              },
+              data: updateData
+            });
+          }else{
+            console.log('No updates needed');
+          }
        }
 
        return NextResponse.json({message: "Settings saved successfully"}, {status: 200,
