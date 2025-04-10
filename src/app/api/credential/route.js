@@ -1,10 +1,12 @@
 import { NextResponse } from 'next/server';
 import prisma from '../../../../lib/prisma';
 import valid_stores from '@/config/valid_stores';
-import {  AES } from 'crypto-js';
-import ENC_UTF8 from "crypto-js/enc-utf8"
+import { encryptAES } from '../../../../lib/encrypt';
+import { decryptAES } from '../../../../lib/decrypt';
 
 const SECRET_KEY = process.env.SECRET_KEY;
+
+
 
 
 const CORS_HEADERS = {
@@ -20,9 +22,9 @@ const CORS_HEADERS = {
 
 export async function POST(req){
 
-
-  
-
+    
+     
+      
         // Set CORS headers
 
     try{
@@ -48,9 +50,14 @@ export async function POST(req){
          }
        });
 
-       const encryptedAccessToken = AES.encrypt(access_token, SECRET_KEY).toString();
-       const encryptedApiKey = AES.encrypt(api_key, SECRET_KEY).toString();
-       const encryptedSecretKey = AES.encrypt(secret_key, SECRET_KEY).toString();
+       const encryptedAccessToken = await encryptAES(access_token,SECRET_KEY)
+       const encryptedApiKey = await encryptAES(api_key,SECRET_KEY)
+       const encryptedSecretKey = await encryptAES(secret_key,SECRET_KEY)
+
+
+       console.log("ENCRYPTED ACCESS TOKEN",encryptedAccessToken)
+       console.log("ENCRYPTED API KEY",encryptedApiKey)
+       console.log("ENCRYPTED SECRET KEY",encryptedSecretKey)
 
        if(cre){
            await prisma.credential.update({
@@ -81,8 +88,7 @@ export async function POST(req){
          }
        });
 
-    //    const decryptedAccessTokenBytes = AES.decrypt(saved.access_token,SECRET_KEY);
-    //    const decryptedAccessToken = decryptedAccessTokenBytes.toString(ENC_UTF8);
+      
 
        return NextResponse.json({message: "Credential saved successfully"}, {status: 201,
          headers: CORS_HEADERS
