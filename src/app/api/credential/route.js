@@ -55,10 +55,6 @@ export async function POST(req){
        const encryptedSecretKey = await encryptAES(secret_key,SECRET_KEY)
 
 
-       console.log("ENCRYPTED ACCESS TOKEN",encryptedAccessToken)
-       console.log("ENCRYPTED API KEY",encryptedApiKey)
-       console.log("ENCRYPTED SECRET KEY",encryptedSecretKey)
-
        if(cre){
            await prisma.credential.update({
               where:{
