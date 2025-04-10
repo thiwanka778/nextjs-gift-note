@@ -67,6 +67,11 @@ export async function PUT(req){
        }
 
 
+       const updatedSettings = await prisma.message_gateway.findMany({
+          where:{
+            shop_identifier: shop_identifier
+          }
+       })
         
 
        return NextResponse.json({message: "Settings updated successfully", data: updatedSettings}, {status: 200,
