@@ -26,8 +26,6 @@ export async function POST(req){
          return NextResponse.json({ message: 'ID missing' }, { status: 400, headers: CORS_HEADERS });
        }
 
-
-
        const {searchParams}= new URL(req.url);
        const sessionToken = searchParams.get('x-shopify-session-token');
        const shop_identifier = searchParams.get("shop_identifier");
@@ -72,12 +70,12 @@ export async function POST(req){
           });
         }
       }
-
-        
+      
+      
       await updateIfMissing('shopify_product_id', shopify_product_id);
       await updateIfMissing('shopify_variant_id', shopify_variant_id);
       await updateIfMissing('shopify_inventory_item_id', shopify_inventory_item_id);
-     
+      
 
        return NextResponse.json({message: "success"}, {status: 200,
          headers: CORS_HEADERS

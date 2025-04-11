@@ -20,7 +20,9 @@ export async function POST(req){
     try{
 
        const body = await req.json();
-       const {name, is_verification,service_charge} = body;
+       const {name, is_verification,service_charge, shopify_product_id,
+        shopify_variant_id, shopify_inventory_item_id
+       } = body;
 
        if(!name || name.trim()===""){
         return NextResponse.json({ message: 'Name missing' }, { status: 400, headers: CORS_HEADERS });
@@ -48,6 +50,8 @@ export async function POST(req){
          return validation.response;
        }
 
+      
+
        const savedPaymentMethod = await prisma.payment_method.create({
          data:{
             shop_identifier: shop_identifier,
@@ -55,9 +59,29 @@ export async function POST(req){
             service_charge: !isNaN(service_charge)?Number(service_charge):0,
             is_verification: is_verification? is_verification:false,
          }
-       })
+       });
 
-       return NextResponse.json({message: "Payment method created successfully", ...savedPaymentMethod}, {status: 201,
+       async function updateIfUnique(field, value) {
+        if (!value || value.trim() === '') return;
+      
+        const existing = await prisma.payment_method.findFirst({
+          where: { [field]: value },
+        });
+      
+        if (!existing) {
+          await prisma.payment_method.update({
+            where: { id: savedPaymentMethod.id },
+            data: { [field]: value },
+          });
+        }
+      }
+
+      await updateIfUnique('shopify_product_id', shopify_product_id);
+      await updateIfUnique('shopify_variant_id', shopify_variant_id);
+      await updateIfUnique('shopify_inventory_item_id', shopify_inventory_item_id);
+
+
+       return NextResponse.json({message: "Payment method created successfully"}, {status: 201,
          headers: CORS_HEADERS
        });
 
