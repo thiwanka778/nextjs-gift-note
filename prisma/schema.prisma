@@ -191,6 +191,8 @@ model payment_method{
   shopify_product_id String?
   shopify_variant_id String?
   shopify_inventory_item_id String?
+  is_active Boolean @default(true)
+  is_deleted Boolean @default(false)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
