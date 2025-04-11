@@ -30,7 +30,7 @@ export async function POST(req){
     try{
 
        const body = await req.json();
-       const {shop_identifier,access_token,api_key,secret_key} = body;
+       const {shop_identifier,access_token,api_key,secret_key, extension_secret_key} = body;
 
        if(!shop_identifier){
         return NextResponse.json({ message: 'Shop identifier missing' }, { status: 400, headers: CORS_HEADERS });
@@ -40,7 +40,8 @@ export async function POST(req){
         return NextResponse.json({ message: 'Invalid shop identifier' }, { status: 400, headers: CORS_HEADERS });
        }
 
-       if(!access_token || access_token.trim()==="" ||  !api_key || api_key.trim()==="" || !secret_key || secret_key.trim()===""){
+       if(!access_token || access_token.trim()==="" ||  !api_key || api_key.trim()==="" || !secret_key || secret_key.trim()===""
+       || !extension_secret_key || extension_secret_key.trim()===""){
         return NextResponse.json({ message: 'Missing required fields' }, { status: 400, headers: CORS_HEADERS });
        }
 
@@ -53,6 +54,7 @@ export async function POST(req){
        const encryptedAccessToken = await encryptAES(access_token,SECRET_KEY)
        const encryptedApiKey = await encryptAES(api_key,SECRET_KEY)
        const encryptedSecretKey = await encryptAES(secret_key,SECRET_KEY)
+       const encryptedExtensionSecretKey = await encryptAES(extension_secret_key,SECRET_KEY)
 
 
        if(cre){
@@ -63,7 +65,8 @@ export async function POST(req){
               data:{
                 access_token: encryptedAccessToken,
                 api_key: encryptedApiKey,
-                secret_key: encryptedSecretKey
+                secret_key: encryptedSecretKey,
+                extension_secret_key: encryptedExtensionSecretKey
               }
            })
        }else{
@@ -72,7 +75,8 @@ export async function POST(req){
             shop_identifier: shop_identifier,
             access_token: encryptedAccessToken,
             api_key: encryptedApiKey,
-            secret_key: encryptedSecretKey
+            secret_key: encryptedSecretKey,
+            extension_secret_key: encryptedExtensionSecretKey
           }
         })
        }

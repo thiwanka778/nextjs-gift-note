@@ -2,6 +2,7 @@
 
 import { NextResponse } from 'next/server';
 import prisma from '../../../../../lib/prisma';
+import { validateGatewayRequest } from '../../../../../lib/validateRequest';
 import valid_stores from '@/config/valid_stores';
 
 
@@ -21,6 +22,13 @@ export async function POST(req){
        const {shop_identifier, physical_variant_id, virtual_variant_id,physical_product_id,virtual_product_id,
          physical_inventory_item_id,virtual_inventory_item_id} = body;
 
+         const { searchParams } = new URL(req.url);
+         const sessionToken = searchParams.get('x-shopify-session-token');
+
+         if(!sessionToken){
+          return NextResponse.json({ message: 'Session token missing' }, { status: 400, headers: CORS_HEADERS });
+         }
+
 
        if(!shop_identifier){
         return NextResponse.json({ message: 'Shop identifier missing' }, { status: 400, headers: CORS_HEADERS });
@@ -30,9 +38,14 @@ export async function POST(req){
         return NextResponse.json({ message: 'Invalid shop identifier' }, { status: 400, headers: CORS_HEADERS });
        }
 
-      //  if(!physical_variant_id && !virtual_variant_id && !physical_product_id && !virtual_product_id){
-      //   return NextResponse.json({ message: 'No variant or product id provided' }, { status: 400, headers: CORS_HEADERS });
-      //  }
+
+       const validation = await validateGatewayRequest(sessionToken, shop_identifier);
+
+       if(!validation.isValid){
+        return validation.response;
+       }
+
+     
 
        const settings = await prisma.gift_note_settings.findUnique({
          where: {

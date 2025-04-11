@@ -203,6 +203,7 @@ model credential {
   access_token String?
   api_key String?
   secret_key String?
+  extension_secret_key String?
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
