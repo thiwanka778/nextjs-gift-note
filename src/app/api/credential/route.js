@@ -22,15 +22,14 @@ const CORS_HEADERS = {
 
 export async function POST(req){
 
-    
-     
-      
-        // Set CORS headers
-
     try{
 
        const body = await req.json();
-       const {shop_identifier,access_token,api_key,secret_key, extension_secret_key} = body;
+       const {shop_identifier,access_token,secret_key,app} = body;
+
+       if(!app || app.trim()===""){
+        return NextResponse.json({ message: 'App missing' }, { status: 400, headers: CORS_HEADERS });
+       }
 
        if(!shop_identifier){
         return NextResponse.json({ message: 'Shop identifier missing' }, { status: 400, headers: CORS_HEADERS });
@@ -40,54 +39,48 @@ export async function POST(req){
         return NextResponse.json({ message: 'Invalid shop identifier' }, { status: 400, headers: CORS_HEADERS });
        }
 
-       if(!access_token || access_token.trim()==="" ||  !api_key || api_key.trim()==="" || !secret_key || secret_key.trim()===""
-       || !extension_secret_key || extension_secret_key.trim()===""){
+       if(!access_token || access_token.trim()===""  || !secret_key || secret_key.trim()===""){
         return NextResponse.json({ message: 'Missing required fields' }, { status: 400, headers: CORS_HEADERS });
        }
 
-       const cre = await prisma.credential.findUnique({
+      
+
+       const encryptedAccessToken = await encryptAES(access_token,SECRET_KEY)
+       const encryptedSecretKey = await encryptAES(secret_key,SECRET_KEY)
+
+       const cre = await prisma.credential.findFirst({
          where:{
-            shop_identifier: shop_identifier
+          shop_identifier: shop_identifier,
+          app: app
          }
        });
 
-       const encryptedAccessToken = await encryptAES(access_token,SECRET_KEY)
-       const encryptedApiKey = await encryptAES(api_key,SECRET_KEY)
-       const encryptedSecretKey = await encryptAES(secret_key,SECRET_KEY)
-       const encryptedExtensionSecretKey = await encryptAES(extension_secret_key,SECRET_KEY)
-
+       console.log("WE ARE HERE ", cre)
 
        if(cre){
-           await prisma.credential.update({
-              where:{
-                id: cre.id
-              },
-              data:{
-                access_token: encryptedAccessToken,
-                api_key: encryptedApiKey,
-                secret_key: encryptedSecretKey,
-                extension_secret_key: encryptedExtensionSecretKey
-              }
-           })
+
+        await prisma.credential.update({
+          where:{
+            id: cre.id
+          },
+          data:{
+            access_token: encryptedAccessToken,
+            secret_key: encryptedSecretKey
+          }
+        })
+
        }else{
+
         await prisma.credential.create({
           data:{
             shop_identifier: shop_identifier,
+            app: app,
             access_token: encryptedAccessToken,
-            api_key: encryptedApiKey,
-            secret_key: encryptedSecretKey,
-            extension_secret_key: encryptedExtensionSecretKey
+            secret_key: encryptedSecretKey
           }
         })
+
        }
-
-
-       const saved = await prisma.credential.findUnique({
-         where:{
-            shop_identifier: shop_identifier
-         }
-       });
-
       
 
        return NextResponse.json({message: "Credential saved successfully"}, {status: 201,

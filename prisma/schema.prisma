@@ -199,15 +199,25 @@ model payment_method{
 
 model credential {
   id Int @id @default(autoincrement())
-  shop_identifier String @unique
+  shop_identifier String
+  app AppName
   access_token String?
-  api_key String?
   secret_key String?
-  extension_secret_key String?
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+
+  @@unique([shop_identifier, app])
 }
 
+
+enum AppName {
+  GIFT_NOTE
+  GIFT_NOTE_EXTENSION
+  SCHEDULE_DELIVERY
+  SCHEDULE_DELIVERY_EXTENSION
+  MESSAGE_GATEWAY
+  MESSAGE_GATEWAY_EXTENSION
+}
 
 
 

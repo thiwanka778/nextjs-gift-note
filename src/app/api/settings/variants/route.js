@@ -22,8 +22,10 @@ export async function POST(req){
        const {shop_identifier, physical_variant_id, virtual_variant_id,physical_product_id,virtual_product_id,
          physical_inventory_item_id,virtual_inventory_item_id} = body;
 
+
          const { searchParams } = new URL(req.url);
          const sessionToken = searchParams.get('x-shopify-session-token');
+         const app = searchParams.get('app');
 
          if(!sessionToken){
           return NextResponse.json({ message: 'Session token missing' }, { status: 400, headers: CORS_HEADERS });
@@ -37,9 +39,12 @@ export async function POST(req){
        if(!valid_stores.includes(shop_identifier)){
         return NextResponse.json({ message: 'Invalid shop identifier' }, { status: 400, headers: CORS_HEADERS });
        }
+       if(!app){
+        return NextResponse.json({ message: 'App missing' }, { status: 400, headers: CORS_HEADERS });
+       }
 
 
-       const validation = await validateGatewayRequest(sessionToken, shop_identifier);
+       const validation = await validateGatewayRequest(sessionToken, shop_identifier,app);
 
        if(!validation.isValid){
         return validation.response;

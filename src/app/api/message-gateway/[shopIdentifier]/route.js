@@ -17,6 +17,7 @@ export async function GET(req, { params }) {
         const {searchParams} = new URL(req.url);
 
         const sessionToken = searchParams.get('x-shopify-session-token');
+        const app = searchParams.get('app');
 
         if(!sessionToken){
             return NextResponse.json({ message: 'Session token missing' }, { status: 400, headers: CORS_HEADERS });
@@ -32,7 +33,7 @@ export async function GET(req, { params }) {
         }
 
 
-        const validation = await validateGatewayRequest(sessionToken,shopIdentifier);
+        const validation = await validateGatewayRequest(sessionToken,shopIdentifier,app);
         if (!validation.isValid) {
          return validation.response;
        }

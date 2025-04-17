@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '../../../../../lib/prisma';
+import { validateGatewayRequest } from '../../../../../lib/validateRequest';
 import { S3Client, PutObjectCommand, GetObjectCommand, HeadObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import valid_stores from '@/config/valid_stores';
@@ -52,6 +53,20 @@ export async function POST(req){
           const file = formData.get('file');
           const shopIdentifier = formData.get('shopIdentifier');
 
+          const { searchParams } = new URL(req.url);
+          const sessionToken = searchParams.get('x-shopify-session-token');
+          const app = searchParams.get('app');
+
+          if(!app){
+            return NextResponse.json({ message: 'App missing' }, { status: 400, headers: CORS_HEADERS });
+          }
+
+          if(!sessionToken){
+            return NextResponse.json({ message: 'Session token is required' }, { status: 400,
+              headers: CORS_HEADERS
+             });
+          }
+
 
           if(!shopIdentifier) return NextResponse.json({ error: "Shop identifier is required" }, { status: 400,
             headers: CORS_HEADERS
@@ -60,6 +75,12 @@ export async function POST(req){
            if(!valid_stores.includes(shopIdentifier)) return NextResponse.json({ message: "Invalid shop identifier" }, { status: 400,
             headers: CORS_HEADERS
            });
+
+           const validation = await validateGatewayRequest(sessionToken,shopIdentifier,app);
+
+           if(!validation.isValid){
+             return validation.response;
+           }
 
           if (!file) return NextResponse.json({ error: "No file uploaded" }, { status: 400,
             headers: CORS_HEADERS
